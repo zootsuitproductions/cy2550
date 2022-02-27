@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+
+import argparse
+from random import randint, sample
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--words', '-w', type=int, required=False)
+parser.add_argument('--caps', '-c', type=int, required=False)
+parser.add_argument('--numbers', '-n', type=int, required=False)
+parser.add_argument('--symbols', '-s', type=int, required=False)
+
+# DO HELP MESSAG ELIKE ASSEINGMENT
+
+args = parser.parse_args()
+
+WORDS = []
+
+with open('words.txt') as f:
+    WORDS = f.readlines()
+
+if args.words is None:
+    args.words = 4
+if args.caps is None:
+    args.caps = 0
+if args.numbers is None:
+    args.numbers = 0
+if args.symbols is None:
+    args.symbols = 0
+
+chosen_words = []
+
+if args.caps > args.words:
+    args.caps = args.words
+if args.numbers > args.words + 1:
+    args.numbers = args.words + 1
+if args.symbols > args.words + 1:
+    args.symbols = args.words + 1
+
+indices_to_capitalize = sample(range(0, args.words), args.caps)
+indices_to_insert_number_before = sample(range(0, args.words + 1), args.numbers)
+indices_to_insert_symbol_before = sample(range(0, args.words + 1), args.symbols)
+
+SYMBOLS = ["~", "!", "@", "#", "$", "%", "^", "&", "*", ".", ":", ";"]
+
+# loops through one extra time, so numbers and symbols can be added to the end of the password
+for word_index in range(0, args.words + 1):
+
+    # decide whether to insert number before the word
+    if word_index in indices_to_insert_number_before:
+        chosen_words.append(str(randint(0, 9)))
+
+    # decide whether to insert symbol before the word
+    if word_index in indices_to_insert_symbol_before:
+        chosen_words.append(SYMBOLS[randint(0, len(SYMBOLS) - 1)])
+
+    # check that we are at not out of words
+    if word_index != args.words:
+        word = WORDS[randint(0, len(WORDS) - 1)].strip()
+
+        if word_index in indices_to_capitalize:
+            word = word.capitalize()
+        else:
+            word = word.lower()
+
+        chosen_words.append(word)
+
+
+print("".join(chosen_words))
